@@ -46,7 +46,8 @@ England
 /** @file This file contains a useful base class that can be used to process images
 
 The code below is not so much a skin on the base OFX classes, but code used in implementing
-specific image processing algorithms.
+specific image processing algorithms. As such it does not sit in the support include lib, but in
+its own include directory.
 */
 
 namespace OFX {
@@ -145,9 +146,9 @@ namespace OFX {
         };
 
         /** @brief this is called by process to actually process images using CUDA when isEnabledCudaRender is true, override in derived classes */
-        virtual void processImagesCuda(void)
+        virtual void processImagesCUDA(void)
         {
-            OFX::Log::print("processImagesCuda not implemented");
+            OFX::Log::print("processImagesCUDA not implemented");
             OFX::throwSuiteStatusException(kOfxStatErrUnsupported);
         };
 
@@ -191,22 +192,18 @@ namespace OFX {
 
             if (_isEnabledOpenCLRender)
             {
-              OFX::Log::print("processing via OpenCL");
                 processImagesOpenCL();
             }
             else if (_isEnabledCudaRender)
             {
-              OFX::Log::print("processing via CUDA");
-                processImagesCuda();
+                processImagesCUDA();
             }
             else if (_isEnabledMetalRender)
             {
-              OFX::Log::print("processing via Metal");
                 processImagesMetal();
             }
             else // is CPU
             {
-              OFX::Log::print("processing via CPU");
                 // make sure there are at least 4096 pixels per CPU and at least 1 line par CPU
                 unsigned int nCPUs = (std::min(_renderWindow.x2 - _renderWindow.x1, 4096) *
                                       (_renderWindow.y2 - _renderWindow.y1)) / 4096;

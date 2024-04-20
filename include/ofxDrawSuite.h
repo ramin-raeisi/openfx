@@ -13,8 +13,7 @@ extern "C" {
 #endif
 
 /** @file ofxDrawSuite.h
-API for host- and GPU API-independent drawing.
-@version Added in OpenFX 1.5
+Contains the API for host-independent drawing. Added for OFX 1.5, Jan 2022.
 */
 
 
@@ -85,9 +84,9 @@ typedef enum OfxDrawTextAlignment
 typedef struct OfxDrawSuiteV1 {
 	/** @brief Retrieves the host's desired draw colour for
 
-	 \arg \c context  draw context
-	 \arg \c std_colour desired colour type
-	 \arg \c colour      returned RGBA colour
+	 \arg context  - the draw context
+	 \arg std_colour - the desired colour type
+	 \arg colour      - the returned RGBA colour
 
 	 @returns
 	 - ::kOfxStatOK - the colour was returned
@@ -98,8 +97,8 @@ typedef struct OfxDrawSuiteV1 {
 
 	/** @brief Sets the colour for future drawing operations (lines, filled shapes and text)
 
-	 \arg \c context  draw context
-	 \arg \c colour      RGBA colour
+	 \arg context  - the draw context
+	 \arg colour      - the RGBA colour
 
 	 The host should use "over" compositing when using a non-opaque colour.
 	
@@ -111,8 +110,8 @@ typedef struct OfxDrawSuiteV1 {
 
 	/** @brief Sets the line width for future line drawing operations
 
-	 \arg \c context  draw context
-	 \arg \c width     line width
+	 \arg context  - the draw context
+	 \arg width     - the line width
 
 	 Use width 0 for a single pixel line or non-zero for a smooth line of the desired width
 
@@ -126,8 +125,8 @@ typedef struct OfxDrawSuiteV1 {
 
 	/** @brief Sets the stipple pattern for future line drawing operations
 
-	 \arg \c context  draw context
-	 \arg \c pattern  desired stipple pattern
+	 \arg context  - the draw context
+	 \arg pattern  - the desired stipple pattern
 
 	 @returns
 	 - ::kOfxStatOK - the pattern was changed
@@ -138,10 +137,10 @@ typedef struct OfxDrawSuiteV1 {
 
 	/** @brief Draws a primitive of the desired type
 
-	 \arg \c context  draw context
-	 \arg \c primitive  desired primitive
-	 \arg \c points  array of points in the primitive
-	 \arg \c point_count  number of points in the array
+	 \arg context  - the draw context
+	 \arg primitive  - the desired primitive
+	 \arg points  - the array of points in the primitive
+	 \arg point_count  - the number of points in the array
 
 	 kOfxDrawPrimitiveLines - like GL_LINES, n points draws n/2 separated lines
 	 kOfxDrawPrimitiveLineStrip - like GL_LINE_STRIP, n points draws n-1 connected lines
@@ -160,10 +159,10 @@ typedef struct OfxDrawSuiteV1 {
 
 	/** @brief Draws text at the specified position
 
-	 \arg \c context  draw context
-	 \arg \c text  text to draw (UTF-8 encoded)
-	 \arg \c pos  position at which to align the text
-	 \arg \c alignment  text alignment flags (see kOfxDrawTextAlignment*)
+	 \arg context  - the draw context
+	 \arg text  - the text to draw (UTF-8 encoded)
+	 \arg pos  - the position at which to align the text
+	 \arg alignment  - the text alignment flags (see kOfxDrawTextAlignment*)
 
 	 The text font face and size are determined by the host.
 

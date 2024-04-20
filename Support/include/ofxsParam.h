@@ -1,8 +1,40 @@
 #ifndef _ofxsParam_H_
 #define _ofxsParam_H_
 
-// Copyright OpenFX and contributors to the OpenFX project.
-// SPDX-License-Identifier: BSD-3-Clause
+/*
+  OFX Support Library, a library that skins the OFX plug-in API with C++ classes.
+  Copyright (C) 2004-2005 The Open Effects Association Ltd
+  Author Bruno Nicoletti bruno@thefoundry.co.uk
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+    * Neither the name The Open Effects Association Ltd, nor the names of its
+      contributors may be used to endorse or promote products derived from this
+      software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The Open Effects Association Ltd
+1 Wardour St
+London W1D 6PA
+England
+
+*/
 
 
 /** @file This file contains core code that wraps OFX parameters with C++ classes.
@@ -10,22 +42,21 @@
 This file only holds code that is visible to a plugin implementation, and so hides much
 of the direct OFX objects and any library side only functions.
 
-The classes that skin parameters are broken into two sets, those used during the description phase, 
+The classes that skin parameters are broken into two sets, those used during the description phase,
 eg OFX::IntParamDescriptor and those representing instances eg, OFX::IntParamInstance. The members on
 each represent the actions that can be carried out on those particular OFX objects.
 
  */
 
 #include <memory>
-#include <limits.h>
 #include "ofxsCore.h"
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC(CLASS) \
-  CLASS &operator=(const CLASS &) {assert(false); return *this;}	\
-  CLASS(const CLASS &) {assert(false); } 
+  CLASS &operator=(const CLASS &) {assert(false); return *this;}    \
+  CLASS(const CLASS &) {assert(false); }
 #define mDeclareProtectedAssignAndCCBase(CLASS,BASE) \
-  CLASS &operator=(const CLASS &) {assert(false); return *this;}	\
+  CLASS &operator=(const CLASS &) {assert(false); return *this;}    \
   CLASS(const CLASS &c) : BASE(c) {assert(false); }
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
@@ -38,10 +69,10 @@ namespace OFX {
     class ValueParamDescriptor;
     class IntParamDescriptor;
     class Int2DParamDescriptor;
-    class Int3DParamDescriptor;    
+    class Int3DParamDescriptor;
     class DoubleParamDescriptor;
     class Double2DParamDescriptor;
-    class Double3DParamDescriptor;    
+    class Double3DParamDescriptor;
     class StringParamDescriptor;
     class RGBAParamDescriptor;
     class RGBParamDescriptor;
@@ -59,10 +90,10 @@ namespace OFX {
     class ValueParam;
     class IntParam;
     class Int2DParam;
-    class Int3DParam;    
+    class Int3DParam;
     class DoubleParam;
     class Double2DParam;
-    class Double3DParam;    
+    class Double3DParam;
     class RGBAParam;
     class RGBParam;
     class StringParam;
@@ -207,7 +238,7 @@ namespace OFX {
         void setEnabled(bool v);
 
         bool getHostHasNativeOverlayHandle() const;
-        
+
         void setUseHostNativeOverlayHandle(bool use);
     };
 
@@ -216,9 +247,9 @@ namespace OFX {
     class DummyParamDescriptor : public ParamDescriptor {
     public :
         /** @brief ctor */
-        DummyParamDescriptor(const std::string &name) 
+        DummyParamDescriptor(const std::string &name)
           : ParamDescriptor(name, eDummyParam, 0)
-        {}  
+        {}
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +277,7 @@ namespace OFX {
 
         /** @brief Set's whether the value of the param is significant (ie: affects the rendered image), defaults to true */
         void setEvaluateOnChange(bool v);
-    
+
         /** @brief Set's how any cache should be invalidated if the parameter is changed, defaults to eCacheInvalidateValueChange */
         void setCacheInvalidation(CacheInvalidationEnum v);
 
@@ -303,7 +334,7 @@ namespace OFX {
         /** @brief set the display min and max, default is to be the same as the range param */
         void setDisplayRange(int min, int max);
     };
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an 2d integer param */
     class Int2DParamDescriptor : public ValueParamDescriptor {
@@ -333,7 +364,7 @@ namespace OFX {
         void setDisplayRange(int minX, int minY,
                             int maxX, int maxY);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an 3d integer param */
     class Int3DParamDescriptor : public ValueParamDescriptor {
@@ -390,7 +421,7 @@ namespace OFX {
         /** @brief set the number of digits printed after a decimal point in any gui */
         void setDigits(int v);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a double param */
     class DoubleParamDescriptor : public BaseDoubleParamDescriptor {
@@ -417,7 +448,7 @@ namespace OFX {
         /** @brief set the display min and max, default is to be the same as the range param */
         void setDisplayRange(double min, double max);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a 2D double param */
     class Double2DParamDescriptor : public BaseDoubleParamDescriptor {
@@ -450,7 +481,7 @@ namespace OFX {
         void setDisplayRange(double minX, double minY,
                             double maxX, double maxY);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a 3D double param */
     class Double3DParamDescriptor : public BaseDoubleParamDescriptor {
@@ -562,7 +593,7 @@ namespace OFX {
         /** @brief set the default value */
         void setDefault(bool v);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a choice param */
     class ChoiceParamDescriptor : public ValueParamDescriptor {
@@ -581,11 +612,11 @@ namespace OFX {
         void setDefault(int v);
 
         /** @brief append an option, default is to have not there */
-        void appendOption(const std::string &v, const std::string& label = "", const int order = INT_MIN);
-    
+        void appendOption(const std::string &v, const std::string& label = "");
+
         /** @brief how many options do we have */
         int getNOptions(void);
-    
+
         /** @brief clear all the options so as to add some new ones in */
         void resetOptions(void);
     };
@@ -610,7 +641,7 @@ namespace OFX {
         void setDefault(const std::string& p_DefaultValue);
 
         /** @brief append an option */
-        void appendOption(const std::string& p_Enum, const std::string& p_Option, int order = INT_MIN);
+        void appendOption(const std::string& p_Enum, const std::string& p_Option);
 
         /** @brief how many options do we have */
         int getNOptions();
@@ -703,18 +734,18 @@ namespace OFX {
 
         void setRange( const double min, const double max );
 
-        void setDimensionLabel( const std::string& label, const int id );
+        void setDimensionLabel(const std::string& label, const int id );
 
         void setUIColour( const int id, const OfxRGBColourD& color );
 
         void addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey );
-        
+
         void setIdentity( const int id );
-        
+
         void setIdentity();
-        
+
         void setInteractDescriptor( ParamInteractDescriptor* desc );
-        
+
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -732,14 +763,14 @@ namespace OFX {
         friend class ParamSetDescriptor;
     public :
         /** @brief set the default value of the param */
-        void setDefault(const std::string &v);    
+        void setDefault(const std::string &v);
 
         void setCustomInterpolation(bool v);
     };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Describes a set of properties */
-    class ParamSetDescriptor { 
+    class ParamSetDescriptor {
     protected :
         mDeclareProtectedAssignAndCC(ParamSetDescriptor);
 
@@ -765,7 +796,7 @@ namespace OFX {
                 // ok define one and add it in
                 OfxPropertySetHandle props;
                 defineRawParam(name, paramType, props);
-    
+
                 // make out support descriptor class
                 paramPtr = new T(name, props);
 
@@ -815,7 +846,7 @@ namespace OFX {
 
         /** @brief Define a 3D integer param */
         Int3DParamDescriptor *defineInt3DParam(const std::string &name);
-    
+
         /** @brief Define an double param */
         DoubleParamDescriptor *defineDoubleParam(const std::string &name);
 
@@ -824,7 +855,7 @@ namespace OFX {
 
         /** @brief Define a 3D double param */
         Double3DParamDescriptor *defineDouble3DParam(const std::string &name);
-    
+
         /** @brief Define a string param */
         StringParamDescriptor *defineStringParam(const std::string &name);
 
@@ -865,9 +896,9 @@ namespace OFX {
     protected :
         // don't ever use these!
         Param &operator=(const Param &/*v1*/) {assert(false); return *this;}
-        Param(const Param &v) : _paramSet(v._paramSet) {assert(false); } 
+        Param(const Param &v) : _paramSet(v._paramSet) {assert(false); }
         Param(void) {assert(false);}
-    
+
     protected :
         const ParamSet      *_paramSet; // who do I belong to
         std::string    _paramName;
@@ -885,7 +916,7 @@ namespace OFX {
 
         /** @brief get name */
         const std::string &getName(void) const;
-    
+
         /** @brief, set the label property in a param */
         void setLabel(const std::string &label);
 
@@ -918,7 +949,7 @@ namespace OFX {
 
         /** @brief whether the param is enabled */
         bool getIsEnable(void) const;
-    
+
         /** @brief get the param data ptr */
         void* getDataPtr(void) const;
 
@@ -933,11 +964,11 @@ namespace OFX {
 
         /** @brief get the icon file name (SVG or PNG) */
         std::string getIcon(bool pngFormat) const;
-        
+
         bool getHostHasNativeOverlayHandle() const;
-        
+
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a value holding param */
     class ValueParam : public Param {
@@ -947,7 +978,7 @@ namespace OFX {
     protected :
         /** @brief hidden constructor */
         ValueParam(const ParamSet *paramSet, const std::string &name, ParamTypeEnum type, OfxParamHandle handle);
-      
+
         friend class ParamSet;
     public :
         /** @brief dtor */
@@ -955,16 +986,16 @@ namespace OFX {
 
         /** @brief Set's whether the value of the param is significant (ie: affects the rendered image) */
         void setEvaluateOnChange(bool v);
-    
+
         /** @brief is the param animating */
         bool getIsAnimating(void) const;
 
         /** @brief is the param animating */
         bool getIsAutoKeying(void) const;
-    
+
         /** @brief is the param animating */
         bool getIsPersistant(void) const;
-    
+
         /** @brief Get's whether the value of the param is significant (ie: affects the rendered image) */
         bool getEvaluateOnChange(void) const;
 
@@ -975,12 +1006,12 @@ namespace OFX {
         unsigned int getNumKeys(void);
 
         /** @brief get the time of the nth key, nth must be between 0 and getNumKeys-1 */
-        double getKeyTime(int nthKey);
+        double getKeyTime(int nthKey) throw(OFX::Exception::Suite, std::out_of_range);
 
         /** @brief find the index of a key by a time */
-        int getKeyIndex(double time, 
+        int getKeyIndex(double time,
                         KeySearchEnum searchDir);
-    
+
         /** @brief deletes a key at the given time */
         void deleteKeyAtTime(double time);
 
@@ -1042,7 +1073,7 @@ namespace OFX {
 
         /** @brief set the value at a time, implicitly adds a keyframe */
         void setValueAtTime(double t, int v);
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an integer param */
@@ -1108,7 +1139,7 @@ namespace OFX {
 
         /** @brief set the current value */
         void setValueAtTime(double t, const OfxPointI &v) {setValueAtTime(t, v.x, v.y);}
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an integer param */
@@ -1156,7 +1187,7 @@ namespace OFX {
 
         /** @brief set the value at a time, implicitly adds a keyframe */
         void setValueAtTime(double t, int x, int y, int z);
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Common base to all double param types */
@@ -1256,7 +1287,7 @@ namespace OFX {
 
         /** @brief integrate the param */
         double integrate(double t1, double t2) {double v; integrate(t1, t2, v); return v;}
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an doubleeger param */
@@ -1316,7 +1347,7 @@ namespace OFX {
 
         /** @brief integrate the param */
         OfxPointD integrate(double t1, double t2) {OfxPointD v; integrate(t1, t2, v.x, v.y); return v;}
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an doubleeger param */
@@ -1376,8 +1407,8 @@ namespace OFX {
 
         /** @brief integrate the param */
         Ofx3DPointD integrate(double t1, double t2) {Ofx3DPointD v; integrate(t1, t2, v.x, v.y, v.z); return v;}
-    };  
-  
+    };
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an RGB param */
     class RGBParam : public ValueParam {
@@ -1408,9 +1439,9 @@ namespace OFX {
 
         /** @brief set the value at a time, implicitly adds a keyframe */
         void setValueAtTime(double t, double r, double g, double b);
-    };  
- 
-  
+    };
+
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up an RGB param */
     class RGBAParam : public ValueParam {
@@ -1441,7 +1472,7 @@ namespace OFX {
 
         /** @brief set the value at a time, implicitly adds a keyframe */
         void setValueAtTime(double t, double r, double g, double b, double a);
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a string param */
@@ -1500,11 +1531,11 @@ namespace OFX {
         int getNOptions(void);
 
         /** @brief append an option, default is to have not there */
-        void appendOption(const std::string &v, const std::string& label = "", const int order = -1);
-    
+        void appendOption(const std::string &v, const std::string& label = "");
+
         /** @brief set an option */
         void setOption(int item, const std::string &str);
-    
+
         /** @brief get the option value */
         void getOption(int ix, std::string &v);
 
@@ -1544,7 +1575,7 @@ namespace OFX {
         int getNOptions();
 
         /** @brief append an option */
-        void appendOption(const std::string& p_Enum, const std::string& p_Option, int order = INT_MIN);
+        void appendOption(const std::string& p_Enum, const std::string& p_Option);
 
         /** @brief set an option */
         void setOption(const std::string& p_Index, const std::string& p_Option);
@@ -1647,10 +1678,10 @@ namespace OFX {
         friend class ParamSet;
     public :
         /** @brief set the default value of the param */
-        void setDefault(const std::string &v);    
+        void setDefault(const std::string &v);
 
         /** @brief get the default value of the param */
-        void getDefault(std::string &v);    
+        void getDefault(std::string &v);
 
         /** @brief get value */
         void getValue(std::string &v);
@@ -1730,7 +1761,7 @@ namespace OFX {
 
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief A set of parameters in a plugin instance */
-    class ParamSet { 
+    class ParamSet {
     protected :
         mDeclareProtectedAssignAndCC(ParamSet);
         ParamTypeEnum getParamType(const std::string& name) const;
@@ -1768,7 +1799,7 @@ namespace OFX {
                 // ok define one and add it in
                 OfxParamHandle paramHandle;
                 fetchRawParam(name, paramType, paramHandle);
-    
+
                 // make out support descriptor class
                 paramPtr = new T(this, name, paramHandle);
 
@@ -1814,7 +1845,7 @@ namespace OFX {
 
         /** @brief Fetch a 3D integer param */
         Int3DParam *fetchInt3DParam(const std::string &name) const;
-    
+
         /** @brief Fetch an double param */
         DoubleParam *fetchDoubleParam(const std::string &name) const;
 
@@ -1823,7 +1854,7 @@ namespace OFX {
 
         /** @brief Fetch a 3D double param */
         Double3DParam *fetchDouble3DParam(const std::string &name) const;
-    
+
         /** @brief Fetch a string param */
         StringParam *fetchStringParam(const std::string &name) const;
 

@@ -1,84 +1,73 @@
-cmake_minimum_required(VERSION 3.16.0)
-if(OFX_SUPPORTS_CUDARENDER AND NOT APPLE)
-  project(
-    openfx
-    VERSION 1.4.0
-    LANGUAGES CXX CUDA)
-else()
-  project(
-    openfx
-    VERSION 1.4.0
-    LANGUAGES CXX) # no CUDA
-endif()
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+cmake_minimum_required(VERSION 3.20)
+
+project(openfx VERSION 1.4.0 LANGUAGES CXX)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
-add_definitions(-D_HAS_AUTO_PTR_ETC)
-if(APPLE)
-  set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
+
+if(WIN32)
+    add_compile_definitions(WINDOWS NOMINMAX WIN64)
+    set(OS_VAR "windows")
+    set(OFX_ARCH_NAME "Win64")
 endif()
 
-option(OFX_SUPPORTS_OPENGLRENDER
-       "Build with support for GPU rendering (OpenGL/CUDA/Metal/OpenCL)" ON)
-option(BUILD_EXAMPLE_PLUGINS "Build example plugins" OFF)
-option(OFX_SUPPORTS_OPENCLRENDER
-       "Build examples with support for OpenCL GPU rendering" OFF)
-option(OFX_SUPPORTS_CUDARENDER
-       "Build examples with support for CUDA GPU rendering" OFF)
-option(PLUGIN_INSTALLDIR "Location to install plugins (default depends on OS)"
-       "")
+set(OFX_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-if(APPLE)
-  set(OFX_SUPPORTS_CUDARENDER OFF)
-endif()
+add_library(OpenFx INTERFACE)
+target_include_directories(OpenFx
+    INTERFACE
+    $<BUILD_INTERFACE:${OFX_HEADERS_DIR}>
+    $<INSTALL_INTERFACE:include/openfx>
+)
 
-if(OFX_SUPPORTS_OPENGLRENDER)
-  add_definitions(-DOFX_SUPPORTS_OPENGLRENDER)
-endif()
-if(OFX_SUPPORTS_OPENCLRENDER)
-  find_package(OpenCLHeaders REQUIRED)
-  find_package(OpenCLICDLoader REQUIRED)
-  add_definitions(-DOFX_SUPPORTS_OPENCLRENDER)
-endif()
-if(OFX_SUPPORTS_CUDARENDER)
-  add_definitions(-DOFX_SUPPORTS_CUDARENDER)
-  set(CMAKE_CUDA_ARCHITECTURES "all-major")
-endif()
+set(OFX_SUPPORT_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Support/include)
 
-# We use #if DEBUG in the examples
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+add_library(OfxSupport STATIC
+    Support/Library/ofxsCore.cpp
+    Support/Library/ofxsImageEffect.cpp
+    Support/Library/ofxsInteract.cpp
+    Support/Library/ofxsLog.cpp
+    Support/Library/ofxsMultiThread.cpp
+    Support/Library/ofxsParams.cpp
+    Support/Library/ofxsProperty.cpp
+    Support/Library/ofxsPropertyValidation.cpp
+)
+target_include_directories(OfxSupport
+    PUBLIC
+    $<BUILD_INTERFACE:${OFX_HEADERS_DIR}>
+    $<BUILD_INTERFACE:${OFX_SUPPORT_HEADERS_DIR}>
+    $<INSTALL_INTERFACE:include/openfx>
+)
+target_link_libraries(OfxSupport INTERFACE OpenFx)
+target_compile_features(OfxSupport PUBLIC cxx_std_11)
 
-# Flags
-if(!MSVC)
-  set(CMAKE_CXX_FLAGS
-      "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-deprecated -Wno-deprecated-declarations"
-  )
-endif()
+install(
+    TARGETS OpenFx OfxSupport
+    EXPORT openfx-davinci-resolve-export
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR})
+install(
+    EXPORT openfx-davinci-resolve-export
+    FILE unofficial-openfx-davinci-resolveConfig.cmake
+    NAMESPACE unofficial::openfx::davinciresolve::
+    DESTINATION "share/unofficial-openfx-davinci-resolve"
+)
 
-# Conan packages
-find_package(EXPAT)
-find_package(opengl_system REQUIRED)
+file(GLOB OFX_HEADERS "${OFX_HEADERS_DIR}/*.h" "${OFX_SUPPORT_HEADERS_DIR}/*.h")
+install(FILES ${OFX_HEADERS}
+    DESTINATION include/openfx
+)
 
-# Macros
-include(OpenFX)
-set_property(GLOBAL PROPERTY OFX_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
+include(CMakePackageConfigHelpers)
 
-# C Headers
-set(OFX_HEADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-file(GLOB_RECURSE OFX_HEADER_FILES "${OFX_HEADER_DIR}/*.h")
-
-# Defines
-if(OFX_SUPPORTS_OPENGLRENDER)
-  add_compile_definitions(OFX_SUPPORTS_OPENGLRENDER)
-endif()
-
-# Build
-add_subdirectory(HostSupport)
-add_subdirectory(Support)
-if(BUILD_EXAMPLE_PLUGINS)
-  add_subdirectory(Examples)
-endif()
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/unofficial-openfx-davinci-resolveConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/unofficial-openfx-davinci-resolveConfigVersion.cmake"
+    DESTINATION "share/unofficial-openfx-davinci-resolve"
+)

@@ -1,15 +1,47 @@
-// Copyright OpenFX and contributors to the OpenFX project.
-// SPDX-License-Identifier: BSD-3-Clause
+/*
+OFX Support Library, a library that skins the OFX plug-in API with C++ classes.
+Copyright (C) 2004-2005 The Open Effects Association Ltd
+Author Bruno Nicoletti bruno@thefoundry.co.uk
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+* Neither the name The Open Effects Association Ltd, nor the names of its
+contributors may be used to endorse or promote products derived from this
+software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The Open Effects Association Ltd
+1 Wardour St
+London W1D 6PA
+England
+
+
+*/
 
 /** @brief This file contains code that skins the ofx param suite */
 
-#include <limits.h>
 #include <cstring>
 #include "ofxsSupportPrivate.h"
 #include "ofxParametricParam.h"
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
-namespace OFX {  
+namespace OFX {
 
   /** @brief dummy page positioning parameter to be passed to @ref OFX::PageParamDescriptor::addChild */
   DummyParamDescriptor PageParamDescriptor::gSkipRow(kOfxParamPageSkipRow);
@@ -20,7 +52,7 @@ namespace OFX {
   /** @brief turns a ParamTypeEnum into the char * that raw OFX uses */
   const char * mapParamTypeEnumToString(ParamTypeEnum v)
   {
-    switch(v) 
+    switch(v)
     {
     case eStringParam : return kOfxParamTypeString ;
     case eIntParam : return kOfxParamTypeInteger ;
@@ -53,19 +85,19 @@ namespace OFX {
   static
   ParamTypeEnum mapParamTypeStringToEnum(const char * v)
   {
-    if(isEqual(kOfxParamTypeString,v)) 
+    if(isEqual(kOfxParamTypeString,v))
       return eStringParam ;
-    else if(isEqual(kOfxParamTypeInteger,v)) 
+    else if(isEqual(kOfxParamTypeInteger,v))
       return eIntParam ;
-    else if(isEqual(kOfxParamTypeInteger2D,v)) 
+    else if(isEqual(kOfxParamTypeInteger2D,v))
       return eInt2DParam ;
-    else if(isEqual(kOfxParamTypeInteger3D,v)) 
+    else if(isEqual(kOfxParamTypeInteger3D,v))
       return eInt3DParam ;
-    else if(isEqual(kOfxParamTypeDouble,v)) 
+    else if(isEqual(kOfxParamTypeDouble,v))
       return eDoubleParam ;
     else if(isEqual(kOfxParamTypeDouble2D,v))
       return eDouble2DParam ;
-    else if(isEqual(kOfxParamTypeDouble3D,v)) 
+    else if(isEqual(kOfxParamTypeDouble3D,v))
       return eDouble3DParam ;
     else if(isEqual(kOfxParamTypeRGB,v))
       return eRGBParam ;
@@ -81,7 +113,7 @@ namespace OFX {
       return eCustomParam ;
     else if(isEqual(kOfxParamTypeGroup,v))
       return eGroupParam ;
-    else if(isEqual(kOfxParamTypePage,v)) 
+    else if(isEqual(kOfxParamTypePage,v))
       return ePageParam ;
     else if(isEqual(kOfxParamTypePushButton,v))
       return ePushButtonParam ;
@@ -103,7 +135,7 @@ namespace OFX {
   {
     // validate the properities on this descriptor
     if(type != eDummyParam)
-      OFX::Validation::validateParameterProperties(type, props, true); 
+      OFX::Validation::validateParameterProperties(type, props, true);
   }
 
   ParamDescriptor::~ParamDescriptor()
@@ -111,14 +143,14 @@ namespace OFX {
   }
 
   /** @brief set the label property */
-  void 
+  void
     ParamDescriptor::setLabel(const std::string &label)
   {
     _paramProps.propSetString(kOfxPropLabel, label);
   }
 
   /** @brief set the label properties */
-  void 
+  void
     ParamDescriptor::setLabels(const std::string &label, const std::string &shortLabel, const std::string &longLabel)
   {
     setLabel(label);
@@ -127,7 +159,7 @@ namespace OFX {
   }
 
   /** @brief set the param hint */
-  void 
+  void
     ParamDescriptor::setHint(const std::string &v)
   {
     _paramProps.propSetString(kOfxParamPropHint, v, false);
@@ -141,40 +173,40 @@ namespace OFX {
   }
 
   /** @brief set the secretness of the param, defaults to false */
-  void 
+  void
     ParamDescriptor::setIsSecret(bool v)
   {
     _paramProps.propSetInt(kOfxParamPropSecret, v);
   }
 
   /** @brief set the if the param is enabled, defaults to true */
-  void 
+  void
     ParamDescriptor::setEnabled(bool v)
   {
     _paramProps.propSetInt(kOfxParamPropEnabled, v);
   }
 
   /** @brief set the group param that is the parent of this one, default is to be ungrouped at the root level */
-  void 
+  void
     ParamDescriptor::setParent(const GroupParamDescriptor &v)
   {
     _paramProps.propSetString(kOfxParamPropParent, v.getName());
   }
 
   /** @brief set the icon file name (SVG or PNG) */
-  void 
+  void
     ParamDescriptor::setIcon(const std::string &v, bool pngFormat)
   {
     _paramProps.propSetString(kOfxPropIcon, v, (int)pngFormat, false); // introduced in OFX 1.2
   }
-    
+
   bool
   ParamDescriptor::getHostHasNativeOverlayHandle() const
   {
     bool v = _paramProps.propGetInt(kOfxParamPropHasHostOverlayHandle, 0, false) != 0; // OFX 1.2
     return v;
   }
-    
+
   void
   ParamDescriptor::setUseHostNativeOverlayHandle(bool use)
   {
@@ -222,7 +254,7 @@ namespace OFX {
   /** @brief Set's how any cache should be invalidated if the parameter is changed, defaults to eCacheInvalidateValueChange */
   void ValueParamDescriptor::setCacheInvalidation(CacheInvalidationEnum v)
   {
-    switch(v) 
+    switch(v)
     {
     case eCacheInvalidateValueChange :
       _paramProps.propSetString(kOfxParamPropCacheInvalidation, kOfxParamInvalidateValueChange);
@@ -255,14 +287,14 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     IntParamDescriptor::setDefault(int v)
   {
     _paramProps.propSetInt(kOfxParamPropDefault, v);
   }
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     IntParamDescriptor::setRange(int min, int max)
   {
     _paramProps.propSetInt(kOfxParamPropMin, min);
@@ -270,7 +302,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     IntParamDescriptor::setDisplayRange(int min, int max)
   {
     _paramProps.propSetInt(kOfxParamPropDisplayMin, min);
@@ -287,7 +319,7 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     Int2DParamDescriptor::setDefault(int x, int y)
   {
     _paramProps.propSetInt(kOfxParamPropDefault, x, 0);
@@ -295,7 +327,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int2DParamDescriptor::setRange(int xmin, int ymin,
     int xmax, int ymax)
   {
@@ -306,7 +338,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int2DParamDescriptor::setDisplayRange(int xmin, int ymin,
     int xmax, int ymax)
   {
@@ -332,7 +364,7 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     Int3DParamDescriptor::setDefault(int x, int y, int z)
   {
     _paramProps.propSetInt(kOfxParamPropDefault, x, 0);
@@ -341,7 +373,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int3DParamDescriptor::setRange(int xmin, int ymin, int zmin,
     int xmax, int ymax, int zmax)
   {
@@ -354,7 +386,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int3DParamDescriptor::setDisplayRange(int xmin, int ymin, int zmin,
     int xmax, int ymax, int zmax)
   {
@@ -385,7 +417,7 @@ namespace OFX {
   /** @brief set the type of the double param, defaults to eDoubleTypePlain */
   void BaseDoubleParamDescriptor::setDoubleType(DoubleTypeEnum v)
   {
-    switch(v) 
+    switch(v)
     {
     case eDoubleTypePlain :
       _paramProps.propSetString(kOfxParamPropDoubleType, kOfxParamDoubleTypePlain);
@@ -483,14 +515,14 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     DoubleParamDescriptor::setDefault(double v)
   {
     _paramProps.propSetDouble(kOfxParamPropDefault, v);
   }
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     DoubleParamDescriptor::setRange(double min, double max)
   {
     _paramProps.propSetDouble(kOfxParamPropMin, min);
@@ -498,7 +530,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     DoubleParamDescriptor::setDisplayRange(double min, double max)
   {
     _paramProps.propSetDouble(kOfxParamPropDisplayMin, min);
@@ -515,7 +547,7 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     Double2DParamDescriptor::setDefault(double x, double y)
   {
     _paramProps.propSetDouble(kOfxParamPropDefault, x, 0);
@@ -523,7 +555,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     Double2DParamDescriptor::setRange(double xmin, double ymin,
     double xmax, double ymax)
   {
@@ -534,7 +566,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double2DParamDescriptor::setDisplayRange(double xmin, double ymin,
     double xmax, double ymax)
   {
@@ -566,7 +598,7 @@ namespace OFX {
   }
 
   /** @brief set the default value, default is 0 */
-  void 
+  void
     Double3DParamDescriptor::setDefault(double x, double y, double z)
   {
     _paramProps.propSetDouble(kOfxParamPropDefault, x, 0);
@@ -575,7 +607,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is -DBL_MAX, DBL_MAX */
-  void 
+  void
     Double3DParamDescriptor::setRange(double xmin, double ymin, double zmin,
     double xmax, double ymax, double zmax)
   {
@@ -588,7 +620,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double3DParamDescriptor::setDisplayRange(double xmin, double ymin, double zmin,
     double xmax, double ymax, double zmax)
   {
@@ -625,7 +657,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is 0., 1. */
-  void 
+  void
     RGBParamDescriptor::setRange(double rmin, double gmin, double bmin,
     double rmax, double gmax, double bmax)
   {
@@ -638,7 +670,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     RGBParamDescriptor::setDisplayRange(double rmin, double gmin, double bmin,
     double rmax, double gmax, double bmax)
   {
@@ -677,7 +709,7 @@ namespace OFX {
 
 
   /** @brief set the hard min/max range, default is 0., 1. */
-  void 
+  void
     RGBAParamDescriptor::setRange(double rmin, double gmin, double bmin, double amin,
     double rmax, double gmax, double bmax, double amax)
   {
@@ -692,7 +724,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     RGBAParamDescriptor::setDisplayRange(double rmin, double gmin, double bmin, double amin,
     double rmax, double gmax, double bmax, double amax)
   {
@@ -751,8 +783,8 @@ namespace OFX {
     return nCurrentValues;
   }
 
-  /** @brief append an option to the choice param */
-  void ChoiceParamDescriptor::appendOption(const std::string &v, const std::string& label, const int order)
+  /** @brief set the default value */
+  void ChoiceParamDescriptor::appendOption(const std::string &v, const std::string& label)
   {
     int nCurrentValues = _paramProps.propGetDimension(kOfxParamPropChoiceOption);
     _paramProps.propSetString(kOfxParamPropChoiceOption, v, nCurrentValues);
@@ -771,13 +803,9 @@ namespace OFX {
         _paramProps.propSetString(kOfxParamPropHint, hint);
       }
     }
-    if (order != INT_MIN) {
-      // Host may not support this prop (added in 1.5); continue without it.
-      _paramProps.propSetInt(kOfxParamPropChoiceOrder, order, nCurrentValues, false);
-    }
   }
 
-  /** @brief reset all options */
+  /** @brief set the default value */
   void ChoiceParamDescriptor::resetOptions(void)
   {
     _paramProps.propReset(kOfxParamPropChoiceOption);
@@ -799,18 +827,13 @@ namespace OFX {
   }
 
   /** @brief append an option */
-  void StrChoiceParamDescriptor::appendOption(const std::string& p_Enum, const std::string& p_Option, int order)
+  void StrChoiceParamDescriptor::appendOption(const std::string& p_Enum, const std::string& p_Option)
   {
       const int numOptions = _paramProps.propGetDimension(kOfxParamPropChoiceOption);
       assert(numOptions == _paramProps.propGetDimension(kOfxParamPropChoiceEnum));
 
       _paramProps.propSetString(kOfxParamPropChoiceEnum, p_Enum, numOptions);
       _paramProps.propSetString(kOfxParamPropChoiceOption, p_Option, numOptions);
-
-      if (order != INT_MIN) {
-        // Host may not support this prop (added in 1.5); continue without it.
-        _paramProps.propSetInt(kOfxParamPropChoiceOrder, order, numOptions, false);
-    }
   }
 
   /** @brief how many options do we have */
@@ -847,7 +870,7 @@ namespace OFX {
   /** @brief sets the kind of the string param, defaults to eStringSingleLine */
   void StringParamDescriptor::setStringType(StringTypeEnum v)
   {
-    switch (v) 
+    switch (v)
     {
     case eStringTypeSingleLine :
       _paramProps.propSetString(kOfxParamPropStringMode,  kOfxParamStringIsSingleLine);
@@ -986,7 +1009,7 @@ namespace OFX {
     addControlPoint(id, 0, 0, 0, false);
     addControlPoint(id, 0, 1, 1, false);
   }
-    
+
   void ParametricParamDescriptor::setIdentity()
   {
     const int nbCurves = _paramProps.propGetInt(kOfxParamPropParametricDimension);
@@ -994,7 +1017,7 @@ namespace OFX {
       setIdentity(i);
     }
   }
-    
+
   void ParametricParamDescriptor::setInteractDescriptor(ParamInteractDescriptor* desc)
   {
     _interact.reset(desc);
@@ -1051,7 +1074,7 @@ namespace OFX {
   }
 
   /** @brief estabilishes the order of page params. Do it by calling it in turn for each page */
-  void 
+  void
     ParamSetDescriptor::setPageParamOrder(PageParamDescriptor &p)
   {
     int nPages = _paramSetProps.propGetDimension(kOfxPluginPropParamPageOrder);
@@ -1079,9 +1102,9 @@ namespace OFX {
   }
 
   /** @brief Define an integer param, only callable from describe in context */
-  IntParamDescriptor * 
+  IntParamDescriptor *
     ParamSetDescriptor::defineIntParam(const std::string &name)
-  { 
+  {
     IntParamDescriptor *param = NULL;
     defineParamDescriptor(name, eIntParam, param);
     return param;
@@ -1104,9 +1127,9 @@ namespace OFX {
   }
 
   /** @brief Define an double param, only callable from describe in context */
-  DoubleParamDescriptor * 
+  DoubleParamDescriptor *
     ParamSetDescriptor::defineDoubleParam(const std::string &name)
-  { 
+  {
     DoubleParamDescriptor *param = NULL;
     defineParamDescriptor(name, eDoubleParam, param);
     return param;
@@ -1226,7 +1249,7 @@ namespace OFX {
     : _paramSet(paramSet)
     , _paramName(name)
     , _paramType(type)
-    , _paramHandle(handle)      
+    , _paramHandle(handle)
   {
     // fetch our property handle
     OfxPropertySetHandle propHandle;
@@ -1349,7 +1372,7 @@ namespace OFX {
     std::string v  = _paramProps.propGetString(kOfxPropIcon, (int)pngFormat, false); // OFX 1.2
     return v;
   }
-    
+
   bool Param::getHostHasNativeOverlayHandle() const
   {
     bool v = _paramProps.propGetInt(kOfxParamPropHasHostOverlayHandle, 0, false) != 0; // OFX 1.2
@@ -1371,42 +1394,42 @@ namespace OFX {
   }
 
   /** @brief Set's whether the value of the param is significant (ie: affects the rendered image) */
-  void 
+  void
     ValueParam::setEvaluateOnChange(bool v)
   {
     _paramProps.propSetInt(kOfxParamPropEvaluateOnChange, v);
   }
 
   /** @brief is the param animating */
-  bool 
+  bool
     ValueParam::getIsAnimating(void) const
   {
     return _paramProps.propGetInt(kOfxParamPropIsAnimating) != 0;
   }
 
   /** @brief is the param auto keing */
-  bool 
+  bool
     ValueParam::getIsAutoKeying(void) const
   {
     return _paramProps.propGetInt(kOfxParamPropIsAutoKeying) != 0;
   }
 
   /** @brief is the param persistant */
-  bool 
+  bool
     ValueParam::getIsPersistant(void) const
   {
     return _paramProps.propGetInt(kOfxParamPropPersistant) != 0;
   }
 
   /** @brief Get's whether the value of the param is significant (ie: affects the rendered image) */
-  bool 
+  bool
     ValueParam::getEvaluateOnChange(void) const
   {
     return _paramProps.propGetInt(kOfxParamPropEvaluateOnChange) != 0;
   }
 
   /** @brief Get's whether the value of the param is significant (ie: affects the rendered image) */
-  CacheInvalidationEnum 
+  CacheInvalidationEnum
     ValueParam::getCacheInvalidation(void) const
   {
     std::string v = _paramProps.propGetString(kOfxParamPropCacheInvalidation);
@@ -1419,7 +1442,7 @@ namespace OFX {
   }
 
   /** @brief if the param is animating, the number of keys in it, otherwise 0 */
-  unsigned int 
+  unsigned int
     ValueParam::getNumKeys(void)
   {
     if(!OFX::Private::gParamSuite->paramGetNumKeys) throwHostMissingSuiteException("paramGetNumKeys");
@@ -1430,8 +1453,8 @@ namespace OFX {
   }
 
   /** @brief get the time of the nth key, nth must be between 0 and getNumKeys-1 */
-  double 
-    ValueParam::getKeyTime(int nthKey)
+  double
+    ValueParam::getKeyTime(int nthKey) throw(OFX::Exception::Suite, std::out_of_range)
   {
     if(!OFX::Private::gParamSuite->paramGetKeyTime) throwHostMissingSuiteException("paramGetKeyTime");
     double v = 0;
@@ -1439,13 +1462,13 @@ namespace OFX {
 
     // oops?
     if(stat == kOfxStatFailed) throw std::out_of_range("ValueParam::getKeyTime key index out of range");
-    throwSuiteStatusException(stat); 
+    throwSuiteStatusException(stat);
     return v;
   }
 
   /** @brief find the index of a key by a time */
-  int 
-    ValueParam::getKeyIndex(double time, 
+  int
+    ValueParam::getKeyIndex(double time,
     KeySearchEnum searchDir)
   {
     if(!OFX::Private::gParamSuite->paramGetKeyIndex) throwHostMissingSuiteException("paramGetKeyIndex");
@@ -1459,27 +1482,27 @@ namespace OFX {
 
     // oops?
     if(stat == kOfxStatFailed) return -1; // if search failed, return -1
-    throwSuiteStatusException(stat); 
+    throwSuiteStatusException(stat);
     return v;
   }
 
   /** @brief deletes a key at the given time */
-  void 
+  void
     ValueParam::deleteKeyAtTime(double time)
   {
     if(!OFX::Private::gParamSuite->paramDeleteKey) throwHostMissingSuiteException("paramDeleteKey");
     OfxStatus stat = OFX::Private::gParamSuite->paramDeleteKey(_paramHandle, time);
     if(stat == kOfxStatFailed) return; // if no key at time, fail quietly
-    throwSuiteStatusException(stat); 
+    throwSuiteStatusException(stat);
   }
 
   /** @brief delete all the keys */
-  void 
+  void
     ValueParam::deleteAllKeys(void)
-  { 
+  {
     if(!OFX::Private::gParamSuite->paramDeleteAllKeys) throwHostMissingSuiteException("paramDeleteAllKeys");
     OfxStatus stat = OFX::Private::gParamSuite->paramDeleteAllKeys(_paramHandle);
-    throwSuiteStatusException(stat); 
+    throwSuiteStatusException(stat);
   }
 
   /** @brief copy parameter from another, including any animation etc... */
@@ -1521,7 +1544,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void IntParam::getDefault(int &v)
-  {    
+  {
     v = _paramProps.propGetInt(kOfxParamPropDefault);
   }
 
@@ -1585,7 +1608,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int2DParam::setRange(int xmin, int ymin,
     int xmax, int ymax)
   {
@@ -1596,7 +1619,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int2DParam::setDisplayRange(int xmin, int ymin,
     int xmax, int ymax)
   {
@@ -1608,14 +1631,14 @@ namespace OFX {
 
   /** @brief het the default value */
   void Int2DParam::getDefault(int &x, int &y)
-  {    
+  {
     x = _paramProps.propGetInt(kOfxParamPropDefault, 0);
     y = _paramProps.propGetInt(kOfxParamPropDefault, 1);
   }
 
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int2DParam::getRange(int &xmin, int &ymin,
     int &xmax, int &ymax)
   {
@@ -1626,7 +1649,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int2DParam::getDisplayRange(int &xmin, int &ymin,
     int &xmax, int &ymax)
   {
@@ -1684,7 +1707,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int3DParam::setRange(int xmin, int ymin, int zmin,
     int xmax, int ymax, int zmax)
   {
@@ -1697,7 +1720,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int3DParam::setDisplayRange(int xmin, int ymin, int zmin,
     int xmax, int ymax, int zmax)
   {
@@ -1711,7 +1734,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void Int3DParam::getDefault(int &x, int &y, int &z)
-  {    
+  {
     x = _paramProps.propGetInt(kOfxParamPropDefault, 0);
     y = _paramProps.propGetInt(kOfxParamPropDefault, 1);
     z = _paramProps.propGetInt(kOfxParamPropDefault, 2);
@@ -1719,7 +1742,7 @@ namespace OFX {
 
 
   /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-  void 
+  void
     Int3DParam::getRange(int &xmin, int &ymin, int &zmin,
     int &xmax, int &ymax, int &zmax)
   {
@@ -1732,7 +1755,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Int3DParam::getDisplayRange(int &xmin, int &ymin, int &zmin,
     int &xmax, int &ymax, int &zmax)
   {
@@ -1893,7 +1916,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void DoubleParam::getDefault(double &v)
-  {    
+  {
     v = _paramProps.propGetDouble(kOfxParamPropDefault);
   }
 
@@ -1973,7 +1996,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     Double2DParam::setRange(double xmin, double ymin,
     double xmax, double ymax)
   {
@@ -1984,7 +2007,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double2DParam::setDisplayRange(double xmin, double ymin,
     double xmax, double ymax)
   {
@@ -1996,14 +2019,14 @@ namespace OFX {
 
   /** @brief get the default value */
   void Double2DParam::getDefault(double &x, double &y)
-  {    
+  {
     x = _paramProps.propGetDouble(kOfxParamPropDefault, 0);
     y = _paramProps.propGetDouble(kOfxParamPropDefault, 1);
   }
 
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     Double2DParam::getRange(double &xmin, double &ymin,
     double &xmax, double &ymax)
   {
@@ -2014,7 +2037,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double2DParam::getDisplayRange(double &xmin, double &ymin,
     double &xmax, double &ymax)
   {
@@ -2088,7 +2111,7 @@ namespace OFX {
   }
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     Double3DParam::setRange(double xmin, double ymin, double zmin,
     double xmax, double ymax, double zmax)
   {
@@ -2101,7 +2124,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double3DParam::setDisplayRange(double xmin, double ymin, double zmin,
     double xmax, double ymax, double zmax)
   {
@@ -2115,7 +2138,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void Double3DParam::getDefault(double &x, double &y, double &z)
-  {    
+  {
     x = _paramProps.propGetDouble(kOfxParamPropDefault, 0);
     y = _paramProps.propGetDouble(kOfxParamPropDefault, 1);
     z = _paramProps.propGetDouble(kOfxParamPropDefault, 2);
@@ -2123,7 +2146,7 @@ namespace OFX {
 
 
   /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-  void 
+  void
     Double3DParam::getRange(double &xmin, double &ymin, double &zmin,
     double &xmax, double &ymax, double &zmax)
   {
@@ -2136,7 +2159,7 @@ namespace OFX {
   }
 
   /** @brief set the display min and max, default is to be the same as the range param */
-  void 
+  void
     Double3DParam::getDisplayRange(double &xmin, double &ymin, double &zmin,
     double &xmax, double &ymax, double &zmax)
   {
@@ -2211,7 +2234,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void RGBParam::getDefault(double &r, double &g, double &b)
-  {    
+  {
     r = _paramProps.propGetDouble(kOfxParamPropDefault, 0);
     g = _paramProps.propGetDouble(kOfxParamPropDefault, 1);
     b = _paramProps.propGetDouble(kOfxParamPropDefault, 2);
@@ -2266,7 +2289,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void RGBAParam::getDefault(double &r, double &g, double &b, double &a)
-  {    
+  {
     r = _paramProps.propGetDouble(kOfxParamPropDefault, 0);
     g = _paramProps.propGetDouble(kOfxParamPropDefault, 1);
     b = _paramProps.propGetDouble(kOfxParamPropDefault, 2);
@@ -2319,7 +2342,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void StringParam::getDefault(std::string &v)
-  {    
+  {
     v = _paramProps.propGetString(kOfxParamPropDefault);
   }
 
@@ -2355,7 +2378,7 @@ namespace OFX {
     OfxStatus stat = OFX::Private::gParamSuite->paramSetValueAtTime(_paramHandle, t, v.c_str());
     throwSuiteStatusException(stat);
   }
-    
+
   ////////////////////////////////////////////////////////////////////////////////
   // Wraps up a Boolean integer param */
 
@@ -2373,7 +2396,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void BooleanParam::getDefault(bool &v)
-  {    
+  {
     v = _paramProps.propGetInt(kOfxParamPropDefault) != 0;
   }
 
@@ -2430,7 +2453,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void ChoiceParam::getDefault(int &v)
-  {    
+  {
     v = _paramProps.propGetInt(kOfxParamPropDefault);
   }
 
@@ -2472,12 +2495,12 @@ namespace OFX {
 
   /** @brief get the option value */
   void ChoiceParam::getOption(int ix, std::string &v)
-  {    
+  {
     v = _paramProps.propGetString(kOfxParamPropChoiceOption, ix);
   }
 
   /** @brief add another option */
-  void ChoiceParam::appendOption(const std::string &v, const std::string& label, const int order)
+  void ChoiceParam::appendOption(const std::string &v, const std::string& label)
   {
     int nCurrentValues = _paramProps.propGetDimension(kOfxParamPropChoiceOption);
     _paramProps.propSetString(kOfxParamPropChoiceOption, v, nCurrentValues);
@@ -2495,10 +2518,6 @@ namespace OFX {
         hint += v + ": " + label;
         _paramProps.propSetString(kOfxParamPropHint, hint);
       }
-    }
-    if (order >= 0) {
-      // Host may not support this prop (added in 1.5); continue without it.
-      _paramProps.propSetInt(kOfxParamPropChoiceOrder, order, false);
     }
   }
 
@@ -2534,18 +2553,13 @@ namespace OFX {
   }
 
   /** @brief add another option */
-  void StrChoiceParam::appendOption(const std::string& p_Enum, const std::string& p_Option, int order)
+  void StrChoiceParam::appendOption(const std::string& p_Enum, const std::string& p_Option)
   {
       const int numOptions = _paramProps.propGetDimension(kOfxParamPropChoiceOption);
       assert(numOptions == _paramProps.propGetDimension(kOfxParamPropChoiceEnum));
 
       _paramProps.propSetString(kOfxParamPropChoiceEnum, p_Enum, numOptions);
       _paramProps.propSetString(kOfxParamPropChoiceOption, p_Option, numOptions);
-
-      if (order != INT_MIN) {
-        // Host may not support this prop (added in 1.5); continue without it.
-        _paramProps.propSetInt(kOfxParamPropChoiceOrder, order, numOptions, false);
-      }
   }
 
   /** @brief set the string of a specific option */
@@ -2612,7 +2626,7 @@ namespace OFX {
 
   /** @brief get the default value */
   void CustomParam::getDefault(std::string &v)
-  {    
+  {
     v = _paramProps.propGetString(kOfxParamPropDefault);
   }
 
@@ -2950,7 +2964,7 @@ namespace OFX {
     // make sure it is of our type
     std::string paramTypeStr = props.propGetString(kOfxParamPropType);
     ParamTypeEnum t = mapParamTypeStringToEnum(paramTypeStr.c_str());
-    switch(t) 
+    switch(t)
     {
     case eStringParam :
       {
@@ -2958,13 +2972,13 @@ namespace OFX {
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eIntParam :           
+    case eIntParam :
       {
         IntParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eInt2DParam : 
+    case eInt2DParam :
       {
         Int2DParam* ptr = 0;
         fetchParam(name, t, ptr);
@@ -2976,43 +2990,43 @@ namespace OFX {
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eDoubleParam : 
+    case eDoubleParam :
       {
         DoubleParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eDouble2DParam : 
+    case eDouble2DParam :
       {
         Double2DParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eDouble3DParam : 
+    case eDouble3DParam :
       {
         Double3DParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eRGBParam : 
+    case eRGBParam :
       {
         RGBParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eRGBAParam : 
+    case eRGBAParam :
       {
         RGBAParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eBooleanParam : 
+    case eBooleanParam :
       {
         BooleanParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eChoiceParam :           
+    case eChoiceParam :
       {
         ChoiceParam* ptr = 0;
         fetchParam(name, t, ptr);
@@ -3036,19 +3050,19 @@ namespace OFX {
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case ePageParam : 
+    case ePageParam :
       {
         PageParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case ePushButtonParam : 
+    case ePushButtonParam :
       {
         PushButtonParam* ptr = 0;
         fetchParam(name, t, ptr);
         return ptr;
       }
-    case eParametricParam : 
+    case eParametricParam :
       {
         ParametricParam* ptr = 0;
         fetchParam(name, t, ptr);
@@ -3073,9 +3087,9 @@ namespace OFX {
   }
 
   /** @brief Fetch an integer param, only callable from describe in context */
-  IntParam * 
+  IntParam *
     ParamSet::fetchIntParam(const std::string &name) const
-  { 
+  {
     IntParam *param = NULL;
     fetchParam(name, eIntParam, param);
     return param;
@@ -3098,9 +3112,9 @@ namespace OFX {
   }
 
   /** @brief Fetch an double param, only callable from describe in context */
-  DoubleParam * 
+  DoubleParam *
     ParamSet::fetchDoubleParam(const std::string &name) const
-  { 
+  {
     DoubleParam *param = NULL;
     fetchParam(name, eDoubleParam, param);
     return param;
@@ -3162,12 +3176,12 @@ namespace OFX {
     return param;
   }
 
-  /** @brief Fetch a StrChoice param */
+  /** @brief Fetch a Choice param */
   StrChoiceParam* ParamSet::fetchStrChoiceParam(const std::string& p_Name) const
   {
       StrChoiceParam* param = NULL;
       fetchParam(p_Name, eStrChoiceParam, param);
-    return param;
+      return param;
   }
 
   /** @brief Fetch a group param */
